@@ -93,22 +93,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div class="sub">PH · 161,21 m² · PB + entrepiso + 1° + 2°</div>
     </div>
 
-    <div class="grp">
-      <div class="lbl">Escenario</div>
-      <div class="seg" role="group" aria-label="Escenario">
-        <button id="btn-hoy" aria-pressed="false">Hoy</button>
-        <button id="btn-proy" aria-pressed="true">Proyecto</button>
-      </div>
-    </div>
 
     <div class="grp">
       <div class="lbl">Vista</div>
       <div class="chips" id="views">
         <button data-v="iso" aria-pressed="true">Casa completa</button>
         <button data-v="cocina" aria-pressed="false">Cocina</button>
-        <button data-v="terraza" aria-pressed="false">Terraza y quincho</button>
+        <button data-v="terraza" aria-pressed="false">Terraza y playroom</button>
         <button data-v="escaleras" aria-pressed="false">Escaleras</button>
-        <button data-v="vestidor" aria-pressed="false">Vestidor</button>
         <button data-v="planta" aria-pressed="false">Planta</button>
       </div>
     </div>
@@ -132,40 +124,27 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
         <legend>Textos</legend>
         <label class="check"><input type="checkbox" data-cat="rooms" id="cat-rooms" checked> Nombres de ambientes</label>
         <label class="check"><input type="checkbox" data-cat="sizes" id="cat-sizes" checked> Superficies y medidas de cada ambiente</label>
-        <label class="check"><input type="checkbox" data-cat="notes" id="cat-notes" checked> <span>Notas del proyecto <span class="dot dot-accent"></span></span></label>
-        <label class="check"><input type="checkbox" data-cat="common" id="cat-common" checked> Partes comunes y vecinos</label>
-        <label class="check"><input type="checkbox" data-cat="levels" id="cat-levels" checked> Niveles de cada planta (±0,00 / +2,80…)</label>
+        <label class="check"><input type="checkbox" data-cat="common" id="cat-common"> Partes comunes y vecinos</label>
+        <label class="check"><input type="checkbox" data-cat="levels" id="cat-levels"> Niveles de cada planta (±0,00 / +2,80…)</label>
       </fieldset>
       <fieldset class="cats">
         <legend>Dibujo técnico</legend>
-        <label class="check"><input type="checkbox" data-cat="dims" id="cat-dims" checked> <span>Cotas (líneas de medida) <span class="dot dot-accent"></span></span></label>
-        <label class="check"><input type="checkbox" data-cat="doors" id="cat-doors" checked> <span>Puertas (giro como en el plano) <span class="dot dot-door"></span></span></label>
-        <label class="check"><input type="checkbox" data-cat="stairs" id="cat-stairs" checked> Datos de escaleras</label>
+        <label class="check"><input type="checkbox" data-cat="dims" id="cat-dims"> <span>Cotas (líneas de medida) <span class="dot dot-accent"></span></span></label>
+        <label class="check"><input type="checkbox" data-cat="doors" id="cat-doors"> <span>Puertas (giro como en el plano) <span class="dot dot-door"></span></span></label>
+        <label class="check"><input type="checkbox" data-cat="stairs" id="cat-stairs"> Datos de escaleras</label>
       </fieldset>
       <fieldset class="cats">
         <legend>Objetos</legend>
-        <label class="check"><input type="checkbox" data-cat="furniture" id="cat-furniture" checked> Muebles y equipamiento</label>
-        <label class="check"><input type="checkbox" data-cat="roofs" id="cat-roofs" checked> Techos comunes</label>
+        <label class="check"><input type="checkbox" data-cat="furniture" id="cat-furniture"> Muebles y equipamiento</label>
+        <label class="check"><input type="checkbox" data-cat="roofs" id="cat-roofs"> Techos comunes</label>
       </fieldset>
       <div class="btns">
         <button id="cat-all" type="button">Mostrar todo</button>
+        <button id="cat-reset" type="button">Solo nombres y medidas</button>
         <button id="cat-none" type="button">Ocultar todo</button>
       </div>
     </div>
 
-    <div class="grp" id="changes-box">
-      <div class="lbl">Cambios del proyecto</div>
-      <ul class="changes">
-        <li>Se tira la pared cocina–comedor y entra una península de Silestone</li>
-        <li>Cocina nueva: muebles, anafe a gas, horno eléctrico, campana, lavavajillas y pot filler</li>
-        <li>Playroom → quincho con mesa y escritorio de trabajo</li>
-        <li>Parrilla nueva con chimenea en la azotea, piso exterior nuevo</li>
-        <li>Lavadero con muebles nuevos</li>
-        <li>Vestidor en el dormitorio principal: se retira el placard, se tira un tabique y se arma con Durlock</li>
-      </ul>
-    </div>
-
-    <p class="note"><b>Basado en el plano de mensura MH-390-2005</b> (versión en alta resolución) y en las fotos del aviso: entrada con 2 escalones, comedor en doble altura con ventanal al patio, patio con deck y jardín vertical, puerta vidriada a la cocina. Las escaleras entrepiso → 1° → 2° están en un núcleo que el plano ubica sobre la UF 1; su recorrido exacto es aproximado. El 1° piso es el de 2005 (suite + 1 dormitorio + baño compartido); hoy figura un dormitorio más. Muebles y parrilla son tentativos.</p>
   </aside>
 </div>
 
@@ -547,9 +526,10 @@ for(const [k,t] of Object.entries({pb:'±0,00 PB',ep:'+2,80 entrepiso',p1:'+4,50
   tagRaw(t,'lvl',k,-1.6,0.1,-1.8,null,'levels');
 
 // ---------- estado y controles ----------
-const CATS = ['rooms','sizes','notes','common','levels','dims','doors','stairs','furniture','roofs'];
-const state = {mode:'proy', explode:1.6, cut:true, cat:Object.fromEntries(CATS.map(c=>[c,true])), show:{pb:true,ep:true,p1:true,p2:true}};
-try { const saved = JSON.parse(localStorage.getItem('capde-cats')||'null'); if(saved) for(const c of CATS) if(c in saved) state.cat[c] = !!saved[c]; } catch(e){}
+const CATS = ['rooms','sizes','common','levels','dims','doors','stairs','furniture','roofs'];
+walls.forEach(w=>{ if(w.mesh.material===mat.highlight) w.mesh.material = mat.wall; });
+const state = {mode:'hoy', explode:1.6, cut:true, cat:Object.fromEntries(CATS.map(c=>[c, c==='rooms'||c==='sizes'])), show:{pb:true,ep:true,p1:true,p2:true}};
+try { const saved = JSON.parse(localStorage.getItem('capde-cats-v2')||'null'); if(saved) for(const c of CATS) if(c in saved) state.cat[c] = !!saved[c]; } catch(e){}
 
 // Clasificación de objetos 3D por categoría y escenario
 const FURN = new Set([mat.furn, mat.fabric, mat.cab, mat.cabOld, mat.stone, mat.steel, mat.dark, mat.brick, mat.stool, mat.slab, mat.green]);
@@ -583,20 +563,16 @@ function apply(){
   });
   managed.forEach(o=>{ o.visible = isOn(o); });
   document.querySelectorAll('[data-cat]').forEach(cb=>{ cb.checked = state.cat[cb.dataset.cat]; });
-  try { localStorage.setItem('capde-cats', JSON.stringify(state.cat)); } catch(e){}
-  document.getElementById('btn-hoy').setAttribute('aria-pressed', state.mode==='hoy');
-  document.getElementById('btn-proy').setAttribute('aria-pressed', state.mode==='proy');
-  document.getElementById('changes-box').hidden = state.mode!=='proy';
+  try { localStorage.setItem('capde-cats-v2', JSON.stringify(state.cat)); } catch(e){}
   document.querySelectorAll('#levels button').forEach(b=>b.setAttribute('aria-pressed', state.show[b.dataset.l]));
 }
-document.getElementById('btn-hoy').onclick = ()=>{state.mode='hoy';apply();};
-document.getElementById('btn-proy').onclick = ()=>{state.mode='proy';apply();};
 document.querySelectorAll('#levels button').forEach(b=>b.onclick=()=>{state.show[b.dataset.l]=!state.show[b.dataset.l];apply();});
 const ex = document.getElementById('explode'), exo = document.getElementById('explode-out');
 ex.oninput = ()=>{state.explode=+ex.value; exo.textContent = ex.value.replace('.',',')+' m'; apply();};
 document.getElementById('cut').onchange = e=>{state.cut=e.target.checked;apply();};
 document.querySelectorAll('[data-cat]').forEach(cb=>cb.onchange = ()=>{ state.cat[cb.dataset.cat] = cb.checked; apply(); });
 document.getElementById('cat-all').onclick = ()=>{ CATS.forEach(c=>state.cat[c]=true); apply(); };
+document.getElementById('cat-reset').onclick = ()=>{ CATS.forEach(c=>state.cat[c]=(c==='rooms'||c==='sizes')); apply(); };
 document.getElementById('cat-none').onclick = ()=>{ CATS.forEach(c=>state.cat[c]=false); apply(); };
 
 const views = {
